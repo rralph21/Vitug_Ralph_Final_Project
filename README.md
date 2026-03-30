@@ -1,7 +1,7 @@
 # Back End Development - Final Project
 
 REST API for a medical appointment system. The API allows users to create, read, update, and delete appointments, as well as manage patient and doctor information. 
-The API is built using Node.js and Express, and it uses MongoDB for data storage. 
+The API is built using Node.js and Express, and it uses Firebase and Firestore for data management and authentication. 
 The API includes endpoints for managing appointments, patients, and doctors, 
 as well as authentication and authorization features to ensure that only authorized 
 users can access certain endpoints. 
