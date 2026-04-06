@@ -4,11 +4,13 @@ import aptRoutes from "./api/v1/routes/aptRoutes";
 // Initialize Express application
 const app: Express = express();
 
-app.use(aptRoutes);
 
 app.use(express.json());
 
-// Sample healt check
+
+app.use("/api/v1", aptRoutes);
+
+// Sample health check
 app.get("/api/v1/health", (req, res) => {
     res.json({
         status: "OK",
