@@ -1,4 +1,4 @@
-export type AptStatus = "pending" | "open" | "close" | "delayed" | "cancelled";
+export type AptStatus = "pending" | "open" | "full" | "delayed" | "cancelled";
 
 export interface Appointment {
     id: number;
