@@ -1,8 +1,10 @@
 import express, { Express } from "express";
+import aptRoutes from "./api/v1/routes/aptRoutes";
 
 // Initialize Express application
 const app: Express = express();
 
+app.use(aptRoutes);
 
 app.use(express.json());
 
@@ -21,5 +23,7 @@ app.get("/api/v1/health", (req, res) => {
 app.get("/", (req, res) => {
     res.send("It's Online!!");
 });
+
+
 
 export default app;
