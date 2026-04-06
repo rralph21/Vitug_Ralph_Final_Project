@@ -2,7 +2,7 @@ import { Appointment } from "../models/aptStatus";
 import { CreateAppointmentInput } from "../models/createApt";
 import { UpdateAppointmentInput } from "../models/updateApt";
 import { sampleAppointments } from "../models/sampleApt";
-import { HTTP_STATUS } from "src/constant/httpConstants";
+import { HTTP_STATUS } from "../../../constant/httpConstants";
 
 export const getAllAptsAsync = (): Appointment[] => {
     // Logic to process all items from the database
