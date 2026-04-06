@@ -1,0 +1,1 @@
+// adminroutes.ts will be used to define all the routes related to admin operations such as creating a new admin, updating admin details, deleting an admin, etc.
