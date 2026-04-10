@@ -1,7 +1,7 @@
 import { Router } from "node_modules/@types/express";
 import {setUserClaims} from "../controllers/adminController"
-import authenticate from "../middleware/authenticate";
-import isAuthorized from "../middleware/authorize"
+// import authenticate from "../middleware/authenticate";
+// import isAuthorized from "../middleware/authorize"
 
 const adminRoutes: Router = Router();
 
