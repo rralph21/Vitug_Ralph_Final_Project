@@ -1,0 +1,1 @@
+// adminController.ts will be used to handle all the admin related operations such as creating a new admin, updating admin details, deleting an admin, etc.
