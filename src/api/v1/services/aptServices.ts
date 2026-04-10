@@ -3,6 +3,12 @@ import { CreateAppointmentInput } from "../models/createApt";
 import { UpdateAppointmentInput } from "../models/updateApt";
 import { sampleAppointments } from "../models/sampleApt";
 import { HTTP_STATUS } from "../../../constant/httpConstants";
+import { appointmentAuditSubscriber } from "../Observer/aptSubscribers";
+import { appointmentEventManager } from "../Observer/eventManager";
+import { notificationSubscriber } from "../Observer/notifSubscribers";
+
+appointmentEventManager.attach(appointmentAuditSubscriber);
+appointmentEventManager.attach(notificationSubscriber);
 
 export const getAllAptsAsync = (): Appointment[] => {
     // Logic to process all items from the database
@@ -27,6 +33,7 @@ export const createAptAsync = (item: CreateAppointmentInput): Appointment => {
         createdAt: new Date().toISOString()
     };
     sampleAppointments.push(newApt);
+    appointmentEventManager.emitCreated(newApt);
     return newApt;
 };
 
@@ -36,7 +43,9 @@ export const updateAptAsync = (id: number, item: UpdateAppointmentInput): Appoin
     if (aptIndex === -1) {
         throw new Error("Appointment not found"), HTTP_STATUS.NOT_FOUND;
     }
+    const previousApt = { ...sampleAppointments[aptIndex] };
     sampleAppointments[aptIndex] = { ...sampleAppointments[aptIndex], ...item };
+    appointmentEventManager.emitUpdated(sampleAppointments[aptIndex], previousApt);
     return sampleAppointments[aptIndex];
 };
 
@@ -47,5 +56,6 @@ export const deleteAptAsync = (id: number): Appointment => {
         throw new Error("Appointment not found"), HTTP_STATUS.NOT_FOUND;
     }
     const [deletedApt] = sampleAppointments.splice(aptIndex, 1);
+    appointmentEventManager.emitDeleted(deletedApt);
     return deletedApt;
 };
