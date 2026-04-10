@@ -1,4 +1,4 @@
-import { Router } from "node_modules/@types/express";
+import { Router } from "express";
 import {setUserClaims} from "../controllers/adminController"
 // import authenticate from "../middleware/authenticate";
 // import isAuthorized from "../middleware/authorize"
