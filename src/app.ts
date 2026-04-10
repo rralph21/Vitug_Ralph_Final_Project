@@ -13,13 +13,11 @@ import adminRoutes from "./api/v1/routes/adminRoutes";
 // Initialize Express application
 const app: Express = express();
 
-// Logging middleware (should be applied early in the middleware stack)
-if (process.env.NODE_ENV === "production") {
-    // In production, log to files
-    app.use(accessLogger);
-    app.use(errorLogger);
-} else {
-    // In development, log to console for immediate feedback
+// Logging middleware should run early so all requests are captured.
+app.use(accessLogger);
+app.use(errorLogger);
+
+if (process.env.NODE_ENV !== "production") {
     app.use(consoleLogger);
 }
 
