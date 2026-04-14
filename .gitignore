@@ -5,3 +5,4 @@ access.log/
 error.log/
 src/logs/access.log
 src/logs/error.log
+src/config/ServiceKey.json
