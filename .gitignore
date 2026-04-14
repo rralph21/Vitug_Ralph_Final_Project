@@ -1,3 +1,7 @@
 node_modules/
 dist/
-ServiceKey.json
+ServiceKey.json/
+access.log/
+error.log/
+src/logs/access.log
+src/logs/error.log
