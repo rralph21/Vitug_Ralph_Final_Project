@@ -29,6 +29,41 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AppointmentListResponse'
+ */
+router.get("/apts", getAllApts);
+
+/**
+ * @swagger
+ * /api/v1/apts/{id}:
+ *   get:
+ *     summary: Get an appointment by id
+ *     tags:
+ *       - Appointments
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Appointment details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AppointmentResponse'
+ *       404:
+ *         description: Appointment not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotFoundResponse'
+ */
+router.get("/apts/:id", validateRequest(aptIdSchema), getAptById);
+
+/**
+ * @swagger
+ * /api/v1/apts:
  *   post:
  *     summary: Create a new appointment
  *     tags:
@@ -55,34 +90,11 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get("/apts", getAllApts);
-router.get("/apts/:id", validateRequest(aptIdSchema), getAptById);
 router.post("/apts", validateRequest(createAptSchema), createApt);
-router.put("/apts/:id", validateRequest(updateAptSchema), updateApt);
-router.delete("/apts/:id", validateRequest(aptIdSchema), deleteApt);
 
 /**
  * @swagger
  * /api/v1/apts/{id}:
- *   get:
- *     summary: Get an appointment by id
- *     tags:
- *       - Appointments
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Appointment details
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/AppointmentResponse'
- *       404:
- *         description: Appointment not found
  *   put:
  *     summary: Update an appointment by id
  *     tags:
@@ -110,6 +122,16 @@ router.delete("/apts/:id", validateRequest(aptIdSchema), deleteApt);
  *               $ref: '#/components/schemas/AppointmentResponse'
  *       400:
  *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.put("/apts/:id", validateRequest(updateAptSchema), updateApt);
+
+/**
+ * @swagger
+ * /api/v1/apts/{id}:
  *   delete:
  *     summary: Delete an appointment by id
  *     tags:
@@ -127,7 +149,14 @@ router.delete("/apts/:id", validateRequest(aptIdSchema), deleteApt);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AppointmentResponse'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
+router.delete("/apts/:id", validateRequest(aptIdSchema), deleteApt);
 
 
 

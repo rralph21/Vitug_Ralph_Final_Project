@@ -59,6 +59,21 @@ app.get("/api/v1/health", (req, res) => {
 
 
 // Define a route
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: Root status message
+ *     tags:
+ *       - System
+ *     responses:
+ *       200:
+ *         description: Simple online status message
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               $ref: '#/components/schemas/RootResponse'
+ */
 app.get("/", (req, res) => {
     res.send("It's Online!!");
 });

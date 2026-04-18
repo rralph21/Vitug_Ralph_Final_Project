@@ -72,6 +72,9 @@ describe("Application routes", () => {
                 title: "Medical Appointment API",
             }),
             paths: expect.objectContaining({
+                "/": expect.any(Object),
+                "/api-docs": expect.any(Object),
+                "/api-docs.json": expect.any(Object),
                 "/api/v1/apts": expect.any(Object),
                 "/api/v1/apts/{id}": expect.any(Object),
                 "/api/v1/admin/setClaims": expect.any(Object),

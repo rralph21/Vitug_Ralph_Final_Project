@@ -41,6 +41,10 @@
           }
         }
       },
+      "RootResponse": {
+        "type": "string",
+        "example": "It's Online!!"
+      },
       "SetClaimsRequest": {
         "type": "object",
         "required": [
@@ -66,6 +70,15 @@
                 "example": "admin"
               }
             }
+          }
+        }
+      },
+      "NotFoundResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Appointment not found"
           }
         }
       },
@@ -281,6 +294,66 @@
         }
       }
     },
+    "/": {
+      "get": {
+        "summary": "Root status message",
+        "tags": [
+          "System"
+        ],
+        "responses": {
+          "200": {
+            "description": "Simple online status message",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RootResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api-docs": {
+      "get": {
+        "summary": "Swagger UI",
+        "tags": [
+          "Documentation"
+        ],
+        "responses": {
+          "200": {
+            "description": "Interactive Swagger UI page",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api-docs.json": {
+      "get": {
+        "summary": "OpenAPI JSON document",
+        "tags": [
+          "Documentation"
+        ],
+        "responses": {
+          "200": {
+            "description": "Raw OpenAPI JSON specification",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/setClaims": {
       "post": {
         "summary": "Set Firebase custom claims for a user",
@@ -415,7 +488,14 @@
             }
           },
           "404": {
-            "description": "Appointment not found"
+            "description": "Appointment not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundResponse"
+                }
+              }
+            }
           }
         }
       },
@@ -463,7 +543,14 @@
             }
           },
           "400": {
-            "description": "Validation error"
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       },
@@ -483,6 +570,16 @@
           }
         ],
         "responses": {
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "418": {
             "description": "Appointment deleted successfully",
             "content": {

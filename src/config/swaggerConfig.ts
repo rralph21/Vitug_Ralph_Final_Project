@@ -36,6 +36,10 @@ const swaggerOptions: swaggerJsdoc.Options = {
                         version: { type: "string", example: "1.0.0" },
                     },
                 },
+                RootResponse: {
+                    type: "string",
+                    example: "It's Online!!",
+                },
                 SetClaimsRequest: {
                     type: "object",
                     required: ["uid", "claims"],
@@ -53,6 +57,15 @@ const swaggerOptions: swaggerJsdoc.Options = {
                                     example: "admin",
                                 },
                             },
+                        },
+                    },
+                },
+                NotFoundResponse: {
+                    type: "object",
+                    properties: {
+                        message: {
+                            type: "string",
+                            example: "Appointment not found",
                         },
                     },
                 },
@@ -84,6 +97,7 @@ const swaggerOptions: swaggerJsdoc.Options = {
     },
     apis: [
         "./src/app.ts",
+        "./src/config/swagger.ts",
         "./src/api/v1/routes/*.ts",
         "./src/api/v1/validation/aptSchemas.swagger.ts",
     ],
