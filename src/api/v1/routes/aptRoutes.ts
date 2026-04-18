@@ -12,6 +12,7 @@ import {
     createAptSchema,
     updateAptSchema,
 } from "../validation/aptValidation";
+import authenticate from "../middleware/authenticate";
 
 const router = Router();
 
@@ -59,7 +60,7 @@ router.get("/apts", getAllApts);
  *             schema:
  *               $ref: '#/components/schemas/NotFoundResponse'
  */
-router.get("/apts/:id", validateRequest(aptIdSchema), getAptById);
+router.get("/apts/:id", validateRequest(aptIdSchema), authenticate, getAptById);
 
 /**
  * @swagger
@@ -90,7 +91,7 @@ router.get("/apts/:id", validateRequest(aptIdSchema), getAptById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post("/apts", validateRequest(createAptSchema), createApt);
+router.post("/apts", validateRequest(createAptSchema), authenticate, createApt);
 
 /**
  * @swagger
@@ -127,7 +128,7 @@ router.post("/apts", validateRequest(createAptSchema), createApt);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put("/apts/:id", validateRequest(updateAptSchema), updateApt);
+router.put("/apts/:id", validateRequest(updateAptSchema), authenticate, updateApt);
 
 /**
  * @swagger
@@ -156,7 +157,7 @@ router.put("/apts/:id", validateRequest(updateAptSchema), updateApt);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete("/apts/:id", validateRequest(aptIdSchema), deleteApt);
+router.delete("/apts/:id", validateRequest(aptIdSchema), authenticate, deleteApt);
 
 
 
