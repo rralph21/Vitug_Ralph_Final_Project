@@ -1,10 +1,17 @@
 import express, { Express } from "express";
+import dotenv from "dotenv";
+dotenv.config();
+
+console.log(process.env)
+// Load environment variables BEFORE your internal imports!
+
 import aptRoutes from "./api/v1/routes/aptRoutes";
 import {
     accessLogger,
     errorLogger,
     consoleLogger,
 } from "./api/v1/middleware/logger";
+import setupSwagger from "./config/swagger";
 import errorHandler from "./api/v1/middleware/errorHander";
 
 import adminRoutes from "./api/v1/routes/adminRoutes";
@@ -47,3 +54,5 @@ app.get("/", (req, res) => {
 app.use(errorHandler);
 
 export default app;
+// Setup Swagger documentation
+setupSwagger(app);
