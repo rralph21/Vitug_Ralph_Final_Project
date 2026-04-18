@@ -18,6 +18,7 @@ const buildAppointment = (overrides: Partial<Appointment> = {}): Appointment => 
     spots: 1,
     status: "open",
     createdAt: "2025-01-10T10:00:00.000Z",
+    updatedAt: "2025-01-10T10:00:00.000Z",
     ...overrides,
 });
 
@@ -60,7 +61,7 @@ describe("Appointment routes", () => {
         test("returns all appointments", async() => {
             // Arrange
             const appointments = [buildAppointment(), buildAppointment({ id: 2, type: "Specialist Consultation" })];
-            mockedAptServices.getAllAptsAsync.mockReturnValue(appointments);
+            mockedAptServices.getAllAptsAsync.mockResolvedValue(appointments);
 
             // Act
             const response = await request("/api/v1/apts");
@@ -74,7 +75,7 @@ describe("Appointment routes", () => {
 
         test("returns an empty array when no appointments exist", async() => {
             // Arrange
-            mockedAptServices.getAllAptsAsync.mockReturnValue([]);
+            mockedAptServices.getAllAptsAsync.mockResolvedValue([]);
 
             // Act
             const response = await request("/api/v1/apts");
@@ -91,7 +92,7 @@ describe("Appointment routes", () => {
         test("returns the appointment for a valid id", async() => {
             // Arrange
             const appointment = buildAppointment({ id: 7, status: "pending" });
-            mockedAptServices.getAptByIdAsync.mockReturnValue(appointment);
+            mockedAptServices.getAptByIdAsync.mockResolvedValue(appointment);
 
             // Act
             const response = await request("/api/v1/apts/7");
@@ -108,7 +109,7 @@ describe("Appointment routes", () => {
 
         test("returns 404 when the appointment is missing", async() => {
             // Arrange
-            mockedAptServices.getAptByIdAsync.mockReturnValue(undefined as never);
+            mockedAptServices.getAptByIdAsync.mockResolvedValue(undefined as never);
 
             // Act
             const response = await request("/api/v1/apts/99");
@@ -134,7 +135,7 @@ describe("Appointment routes", () => {
                 item,
             };
             const createdAppointment = buildAppointment({ id: 10, ...payload.item });
-            mockedAptServices.createAptAsync.mockReturnValue(createdAppointment);
+            mockedAptServices.createAptAsync.mockResolvedValue(createdAppointment);
 
             // Act
             const response = await request("/api/v1/apts", {
@@ -146,7 +147,10 @@ describe("Appointment routes", () => {
 
             // Assert
             expect(response.status).toBe(HTTP_STATUS.CREATED);
-            expect(body).toEqual(createdAppointment);
+            expect(body).toEqual({
+                message: "Appointment created successfully",
+                data: createdAppointment,
+            });
             expect(mockedAptServices.createAptAsync).toHaveBeenCalledWith(payload.item);
         });
 
@@ -162,7 +166,7 @@ describe("Appointment routes", () => {
                 item,
             };
             const createdAppointment = buildAppointment({ id: 11, ...payload.item });
-            mockedAptServices.createAptAsync.mockReturnValue(createdAppointment);
+            mockedAptServices.createAptAsync.mockResolvedValue(createdAppointment);
 
             // Act
             const response = await request("/api/v1/apts", {
@@ -174,8 +178,30 @@ describe("Appointment routes", () => {
 
             // Assert
             expect(response.status).toBe(HTTP_STATUS.CREATED);
-            expect(body.status).toBe("delayed");
+            expect(body.data.status).toBe("delayed");
             expect(mockedAptServices.createAptAsync).toHaveBeenCalledWith(payload.item);
+        });
+
+        test("returns 400 for an invalid appointment payload", async() => {
+            // Act
+            const response = await request("/api/v1/apts", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    item: {
+                        clinic: "A",
+                        type: "Vaccination",
+                        spots: -1,
+                        status: "invalid",
+                    },
+                }),
+            });
+            const body = await response.json();
+
+            // Assert
+            expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST);
+            expect(body.error).toContain("Validation error:");
+            expect(mockedAptServices.createAptAsync).not.toHaveBeenCalled();
         });
     });
 
@@ -190,7 +216,7 @@ describe("Appointment routes", () => {
                 item,
             };
             const updatedAppointment = buildAppointment({ id: 3, ...payload.item });
-            mockedAptServices.updateAptAsync.mockReturnValue(updatedAppointment);
+            mockedAptServices.updateAptAsync.mockResolvedValue(updatedAppointment);
 
             // Act
             const response = await request("/api/v1/apts/3", {
@@ -202,7 +228,10 @@ describe("Appointment routes", () => {
 
             // Assert
             expect(response.status).toBe(HTTP_STATUS.OK);
-            expect(body).toEqual(updatedAppointment);
+            expect(body).toEqual({
+                message: "Appointment updated successfully",
+                data: updatedAppointment,
+            });
             expect(mockedAptServices.updateAptAsync).toHaveBeenCalledWith(3, payload.item);
         });
 
@@ -215,7 +244,7 @@ describe("Appointment routes", () => {
                 item,
             };
             const updatedAppointment = buildAppointment({ id: 5, spots: 2 });
-            mockedAptServices.updateAptAsync.mockReturnValue(updatedAppointment);
+            mockedAptServices.updateAptAsync.mockResolvedValue(updatedAppointment);
 
             // Act
             const response = await request("/api/v1/apts/5", {
@@ -227,8 +256,27 @@ describe("Appointment routes", () => {
 
             // Assert
             expect(response.status).toBe(HTTP_STATUS.OK);
-            expect(body.spots).toBe(2);
+            expect(body.data.spots).toBe(2);
             expect(mockedAptServices.updateAptAsync).toHaveBeenCalledWith(5, payload.item);
+        });
+
+        test("returns 400 for an invalid appointment id", async() => {
+            // Act
+            const response = await request("/api/v1/apts/not-a-number", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    item: {
+                        spots: 2,
+                    },
+                }),
+            });
+            const body = await response.json();
+
+            // Assert
+            expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST);
+            expect(body.error).toContain("Validation error:");
+            expect(mockedAptServices.updateAptAsync).not.toHaveBeenCalled();
         });
     });
 
@@ -236,32 +284,37 @@ describe("Appointment routes", () => {
         test("deletes an appointment by id", async() => {
             // Arrange
             const deletedAppointment = buildAppointment({ id: 4 });
-            mockedAptServices.deleteAptAsync.mockReturnValue(deletedAppointment);
+            mockedAptServices.deleteAptAsync.mockResolvedValue(deletedAppointment);
 
             // Act
             const response = await request("/api/v1/apts/4", {
                 method: "DELETE",
             });
-            const body = await response.text();
+            const body = await response.json();
 
             // Assert
-            expect(response.status).toBe(HTTP_STATUS.NO_CONTENT);
-            expect(body).toBe("");
+            expect(response.status).toBe(HTTP_STATUS.IM_A_TEAPOT);
+            expect(body).toEqual({
+                message: "Appointment deleted successfully",
+                data: deletedAppointment,
+            });
             expect(mockedAptServices.deleteAptAsync).toHaveBeenCalledWith(4);
         });
 
-        test("still responds with no content for another valid id", async() => {
+        test("still responds with a delete message for another valid id", async() => {
             // Arrange
             const deletedAppointment = buildAppointment({ id: 8 });
-            mockedAptServices.deleteAptAsync.mockReturnValue(deletedAppointment);
+            mockedAptServices.deleteAptAsync.mockResolvedValue(deletedAppointment);
 
             // Act
             const response = await request("/api/v1/apts/8", {
                 method: "DELETE",
             });
+            const body = await response.json();
 
             // Assert
-            expect(response.status).toBe(HTTP_STATUS.NO_CONTENT);
+            expect(response.status).toBe(HTTP_STATUS.IM_A_TEAPOT);
+            expect(body.message).toBe("Appointment deleted successfully");
             expect(mockedAptServices.deleteAptAsync).toHaveBeenCalledWith(8);
         });
     });

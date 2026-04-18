@@ -8,6 +8,8 @@ import {
     getAptByIdAsync 
 } from "../services/aptServices";
 
+const getAppointmentPayload = (body: Request["body"]) => body.item ?? body;
+
 
 export const getAllApts = async(req: Request, res: Response): Promise<void> => {
     const apts = await getAllAptsAsync();
@@ -35,8 +37,11 @@ export const getAptById = async(req: Request, res: Response): Promise<void> => {
 
 export const createApt = async(req: Request, res: Response): Promise<void> => {
     // Logic to create a new item
-    const newItem = await createAptAsync(req.body.item);
-    res.status(HTTP_STATUS.CREATED).send(newItem);
+    const newItem = await createAptAsync(getAppointmentPayload(req.body));
+    res.status(HTTP_STATUS.CREATED).json({
+        message: "Appointment created successfully",
+        data: newItem,
+    });
 };
 
 export const updateApt = async(req: Request, res: Response): Promise<void> => {
@@ -45,8 +50,11 @@ export const updateApt = async(req: Request, res: Response): Promise<void> => {
      // Logic to check if the item exists before updating  
 
     // Logic to update an item
-    const updatedItem = await updateAptAsync(id, req.body.item);
-    res.status(HTTP_STATUS.OK).send(updatedItem);
+    const updatedItem = await updateAptAsync(id, getAppointmentPayload(req.body));
+    res.status(HTTP_STATUS.OK).json({
+        message: "Appointment updated successfully",
+        data: updatedItem,
+    });
 };
 
 export const deleteApt = async(req: Request, res: Response): Promise<void> => {
@@ -54,5 +62,8 @@ export const deleteApt = async(req: Request, res: Response): Promise<void> => {
 
     // Logic to delete an item
     const deletedItem = await deleteAptAsync(id);
-    res.status(HTTP_STATUS.NO_CONTENT).send(deletedItem);
+    res.status(HTTP_STATUS.IM_A_TEAPOT).json({
+        message: "Appointment deleted successfully",
+        data: deletedItem,
+    });
 };

@@ -7,4 +7,5 @@ export interface Appointment {
     spots: number;
     status: AptStatus;
     createdAt: string;
+    updatedAt: string;
 }

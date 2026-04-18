@@ -55,6 +55,26 @@ Service → Repository → Database → Response
 This API provides a robust and secure backend for a medical appointment system, allowing for efficient management of appointments, patients, and doctors. 
 With features like authentication, validation, and error handling, it ensures a reliable and user-friendly experience for both patients and healthcare providers.
 
+## Version 1.0.1
+
+## New component and integration
+
+# Observer pattern integration
+
+- observer pattern is a pattern that allows an object, called the subject, 
+to maintain a list of its dependents, called observers, and notify them of any state changes, 
+usually by calling one of their methods.
+
+- In this project, the observer pattern is used to notify the doctor when a new appointment is created. 
+When a patient creates a new appointment, the doctor is notified of the new appointment and can take appropriate action, 
+such as confirming the appointment or rescheduling it. Additionally, patients can also be notified of any changes to their 
+appointments, such as cancellations or rescheduling, through the observer pattern.
+
+# resources
+
+- refactoring.guru/design-patterns/observer
+
+
 # Author
 
 Ralph Vitug
