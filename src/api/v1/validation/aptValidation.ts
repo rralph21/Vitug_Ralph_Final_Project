@@ -5,11 +5,12 @@ const aptStatuses = ["pending", "open", "full", "delayed", "cancelled"] as const
 const aptStatusSchema = Joi.string().valid(...aptStatuses);
 
 const appointmentIdSchema = Joi.object({
-    id: Joi.number().integer().positive().required().messages({
+    id: Joi.number().integer().positive().max(50).required().messages({
         "any.required": '"id" is required',
         "number.base": '"id" must be a number',
         "number.integer": '"id" must be an integer',
         "number.positive": '"id" must be a positive number',
+        "number.max": '"id" must be less than or equal to 50',
     }),
 });
 

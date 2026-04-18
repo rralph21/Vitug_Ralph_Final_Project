@@ -1,9 +1,10 @@
 import fs from "fs";
-import path from "path";
 import { generateSwaggerSpec } from "../src/config/swaggerConfig";
 
-const outputPath = path.resolve(__dirname, "../openapi.json");
-const swaggerSpec = generateSwaggerSpec();
+// Get the specs using our shared configuration
+const specs = generateSwaggerSpec();
 
-fs.writeFileSync(outputPath, JSON.stringify(swaggerSpec, null, 2), "utf-8");
-console.log(`OpenAPI spec written to ${outputPath}`);
+// Write specs to a JSON file
+fs.writeFileSync("./openapi.json", JSON.stringify(specs, null, 2));
+
+console.log("OpenAPI specification generated successfully!");
