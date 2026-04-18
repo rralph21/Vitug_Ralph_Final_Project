@@ -20,10 +20,10 @@ import { errorResponse } from "../models/responseModel";
  * @param _next - Express next function (unused but required for Express error middleware signature)
  */
 const errorHandler = (
-    err: Error | null,
-    req: Request,
+    err: unknown,
+    _req: Request,
     res: Response,
-    _next: NextFunction
+    next: NextFunction
 ): void => {
     if (!err) {
         console.error("Error: null or undefined error received");
@@ -33,17 +33,26 @@ const errorHandler = (
         return;
     }
 
+    if (res.headersSent) {
+        next(err);
+        return;
+    }
+
+    const normalizedError = err instanceof Error ? err : new Error(String(err));
+
     // Log the error message for debugging
-    console.error(`Error: ${err.message}`);
+    console.error(`Error: ${normalizedError.message}`);
 
     // Log stack trace for non-production environments
     if (process.env.NODE_ENV !== "production") {
-        console.error(`Stack: ${err.stack}`);
+        console.error(`Stack: ${normalizedError.stack}`);
     }
 
-    if (err instanceof AppError) {
+    if (normalizedError instanceof AppError) {
         // Handle our custom application errors with their specific status codes
-        res.status(err.statusCode).json(errorResponse(err.message, err.code));
+        res.status(normalizedError.statusCode).json(
+            errorResponse(normalizedError.message, normalizedError.code)
+        );
     } else {
         // Handle unexpected errors (programming errors, third-party library errors, etc.)
         res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(
