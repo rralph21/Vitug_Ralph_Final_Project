@@ -52,4 +52,31 @@ describe("Application routes", () => {
         expect(typeof body.uptime).toBe("number");
         expect(typeof body.timestamp).toBe("string");
     });
+
+    test("serves swagger ui", async() => {
+        const response = await fetch(`${baseUrl}/api-docs/`);
+        const body = await response.text();
+
+        expect(response.status).toBe(HTTP_STATUS.OK);
+        expect(body).toContain("Swagger UI");
+    });
+
+    test("serves the OpenAPI json document", async() => {
+        const response = await fetch(`${baseUrl}/api-docs.json`);
+        const body = await response.json();
+
+        expect(response.status).toBe(HTTP_STATUS.OK);
+        expect(body).toEqual(expect.objectContaining({
+            openapi: "3.0.0",
+            info: expect.objectContaining({
+                title: "Medical Appointment API",
+            }),
+            paths: expect.objectContaining({
+                "/api/v1/apts": expect.any(Object),
+                "/api/v1/apts/{id}": expect.any(Object),
+                "/api/v1/admin/setClaims": expect.any(Object),
+                "/api/v1/health": expect.any(Object),
+            }),
+        }));
+    });
 });

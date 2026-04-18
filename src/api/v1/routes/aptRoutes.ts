@@ -11,16 +11,123 @@ import {
     aptIdSchema,
     createAptSchema,
     updateAptSchema,
-} from "../utils/aptValidation";
+} from "../validation/aptValidation";
 
 const router = Router();
 
-
+/**
+ * @swagger
+ * /api/v1/apts:
+ *   get:
+ *     summary: Get all appointments
+ *     tags:
+ *       - Appointments
+ *     responses:
+ *       200:
+ *         description: List of appointments
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AppointmentListResponse'
+ *   post:
+ *     summary: Create a new appointment
+ *     tags:
+ *       - Appointments
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - $ref: '#/components/schemas/CreateAppointmentInput'
+ *               - $ref: '#/components/schemas/WrappedCreateAppointmentInput'
+ *     responses:
+ *       201:
+ *         description: Appointment created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AppointmentResponse'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.get("/apts", getAllApts);
 router.get("/apts/:id", validateRequest(aptIdSchema), getAptById);
 router.post("/apts", validateRequest(createAptSchema), createApt);
 router.put("/apts/:id", validateRequest(updateAptSchema), updateApt);
 router.delete("/apts/:id", validateRequest(aptIdSchema), deleteApt);
+
+/**
+ * @swagger
+ * /api/v1/apts/{id}:
+ *   get:
+ *     summary: Get an appointment by id
+ *     tags:
+ *       - Appointments
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Appointment details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AppointmentResponse'
+ *       404:
+ *         description: Appointment not found
+ *   put:
+ *     summary: Update an appointment by id
+ *     tags:
+ *       - Appointments
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - $ref: '#/components/schemas/UpdateAppointmentInput'
+ *               - $ref: '#/components/schemas/WrappedUpdateAppointmentInput'
+ *     responses:
+ *       200:
+ *         description: Appointment updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AppointmentResponse'
+ *       400:
+ *         description: Validation error
+ *   delete:
+ *     summary: Delete an appointment by id
+ *     tags:
+ *       - Appointments
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       418:
+ *         description: Appointment deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AppointmentResponse'
+ */
 
 
 
