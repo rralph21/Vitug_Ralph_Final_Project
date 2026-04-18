@@ -39,7 +39,7 @@ router.get("/apts", getAllApts);
  * /api/v1/apts/{id}:
  *   get:
  *     summary: Get an appointment by id
- *     description: Requires a Firebase bearer token. Allowed roles: admin, user, doctor, manager.
+ *     description: "Requires a Firebase bearer token. Allowed roles: admin, user, doctor, manager."
  *     tags:
  *       - Appointments
  *     security:
@@ -83,7 +83,7 @@ router.get("/apts/:id", authenticate, isAuthorized({hasRole: ["admin" , "user", 
  * /api/v1/apts:
  *   post:
  *     summary: Create a new appointment
- *     description: Requires a Firebase bearer token. Allowed roles: admin, doctor, manager.
+ *     description: "Requires a Firebase bearer token. Allowed roles: admin, doctor, manager."
  *     tags:
  *       - Appointments
  *     security:
@@ -129,7 +129,7 @@ router.post("/apts", authenticate, isAuthorized({hasRole: ["admin" , "doctor", "
  * /api/v1/apts/{id}:
  *   put:
  *     summary: Update an appointment by id
- *     description: Requires a Firebase bearer token. Allowed roles: doctor, manager.
+ *     description: "Requires a Firebase bearer token. Allowed roles: doctor, manager."
  *     tags:
  *       - Appointments
  *     security:
@@ -181,7 +181,7 @@ router.put("/apts/:id", authenticate,isAuthorized({hasRole: [ "doctor", "manager
  * /api/v1/apts/{id}:
  *   delete:
  *     summary: Delete an appointment by id
- *     description: Requires a Firebase bearer token. Allowed roles: admin, manager.
+ *     description: "Requires a Firebase bearer token. Allowed roles: admin, manager."
  *     tags:
  *       - Appointments
  *     security:
