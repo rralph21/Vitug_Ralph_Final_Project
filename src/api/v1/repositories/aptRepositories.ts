@@ -1,7 +1,6 @@
 import {
     CollectionReference,
     DocumentData,
-    FieldValue,
     Transaction,
 } from "firebase-admin/firestore";
 import { HTTP_STATUS } from "../../../constant/httpConstants";
@@ -12,9 +11,6 @@ import { CreateAppointmentInput } from "../models/createApt";
 import { UpdateAppointmentInput } from "../models/updateApt";
 
 const APPOINTMENTS_COLLECTION = "appointments";
-const METADATA_COLLECTION = "metadata";
-const COUNTERS_DOCUMENT = "counters";
-const APPOINTMENT_COUNTER_FIELD = "appointmentId";
 
 const getAppointmentsCollection = (): CollectionReference<DocumentData> =>
     getFirebaseDb().collection(APPOINTMENTS_COLLECTION);
@@ -29,7 +25,8 @@ const mapAppointment = (
         typeof data.type !== "string" ||
         typeof data.spots !== "number" ||
         typeof data.status !== "string" ||
-        typeof data.createdAt !== "string"
+        typeof data.createdAt !== "string" ||
+        typeof data.updatedAt !== "string"
     ) {
         throw new RepositoryError(
             `Appointment ${id} is missing required fields in Firestore`,
@@ -44,30 +41,27 @@ const mapAppointment = (
         spots: data.spots,
         status: data.status,
         createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
     };
 };
 
 const getNextAppointmentId = async(transaction: Transaction): Promise<number> => {
-    const counterRef = getFirebaseDb()
-        .collection(METADATA_COLLECTION)
-        .doc(COUNTERS_DOCUMENT);
-
-    const counterSnapshot = await transaction.get(counterRef);
-    const currentValue = counterSnapshot.exists
-        ? Number(counterSnapshot.data()?.[APPOINTMENT_COUNTER_FIELD] ?? 0)
-        : 0;
-    const nextValue = currentValue + 1;
-
-    transaction.set(
-        counterRef,
-        {
-            [APPOINTMENT_COUNTER_FIELD]: nextValue,
-            updatedAt: FieldValue.serverTimestamp(),
-        },
-        { merge: true }
+    const latestAppointmentQuery = getAppointmentsCollection()
+        .orderBy("id", "desc")
+        .limit(1);
+    const latestAppointmentSnapshot = await transaction.get(
+        latestAppointmentQuery
     );
 
-    return nextValue;
+    if (latestAppointmentSnapshot.empty) {
+        return 1;
+    }
+
+    const latestAppointmentData =
+        latestAppointmentSnapshot.docs[0].data() as Partial<Appointment>;
+    const currentMaxId = Number(latestAppointmentData.id ?? 0);
+
+    return currentMaxId + 1;
 };
 
 export const getAllAptsRepo = async(): Promise<Appointment[]> => {
@@ -111,10 +105,12 @@ export const createAptRepo = async(
     try {
         return await getFirebaseDb().runTransaction(async(transaction) => {
             const nextId = await getNextAppointmentId(transaction);
+            const timestamp = new Date().toISOString();
             const newAppointment: Appointment = {
                 ...item,
                 id: nextId,
-                createdAt: new Date().toISOString(),
+                createdAt: timestamp,
+                updatedAt: timestamp,
             };
 
             const docRef = getAppointmentsCollection().doc(String(nextId));
@@ -151,6 +147,7 @@ export const updateAptRepo = async(
                 ...currentAppointment,
                 ...item,
                 id,
+                updatedAt: new Date().toISOString(),
             };
 
             transaction.set(docRef, updatedAppointment);
