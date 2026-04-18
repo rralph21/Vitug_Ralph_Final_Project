@@ -19,6 +19,8 @@ const mapAppointment = (
     data: Partial<Appointment> | undefined,
     id: number
 ): Appointment => {
+    const resolvedUpdatedAt = data?.updatedAt ?? data?.createdAt;
+
     if (
         !data ||
         typeof data.clinic !== "string" ||
@@ -26,7 +28,7 @@ const mapAppointment = (
         typeof data.spots !== "number" ||
         typeof data.status !== "string" ||
         typeof data.createdAt !== "string" ||
-        typeof data.updatedAt !== "string"
+        typeof resolvedUpdatedAt !== "string"
     ) {
         throw new RepositoryError(
             `Appointment ${id} is missing required fields in Firestore`,
@@ -41,7 +43,7 @@ const mapAppointment = (
         spots: data.spots,
         status: data.status,
         createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
+        updatedAt: resolvedUpdatedAt,
     };
 };
 

@@ -62,5 +62,8 @@ export const deleteApt = async(req: Request, res: Response): Promise<void> => {
 
     // Logic to delete an item
     const deletedItem = await deleteAptAsync(id);
-    res.status(HTTP_STATUS.NO_CONTENT).send(deletedItem);
+    res.status(HTTP_STATUS.IM_A_TEAPOT).json({
+        message: "Appointment deleted successfully",
+        data: deletedItem,
+    });
 };

@@ -12,6 +12,7 @@ export const HTTP_STATUS = {
     UNAUTHORIZED: 401, // NEW: For authentication errors (invalid token)
     FORBIDDEN: 403, // NEW: For authorization errors (insufficient role)
     NOT_FOUND: 404,
+    IM_A_TEAPOT: 418,
     CONFLICT: 409, // NEW: For resource conflicts
     UNPROCESSABLE_ENTITY: 422, // NEW: For validation errors
 

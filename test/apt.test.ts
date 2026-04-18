@@ -290,15 +290,18 @@ describe("Appointment routes", () => {
             const response = await request("/api/v1/apts/4", {
                 method: "DELETE",
             });
-            const body = await response.text();
+            const body = await response.json();
 
             // Assert
-            expect(response.status).toBe(HTTP_STATUS.NO_CONTENT);
-            expect(body).toBe("");
+            expect(response.status).toBe(HTTP_STATUS.IM_A_TEAPOT);
+            expect(body).toEqual({
+                message: "Appointment deleted successfully",
+                data: deletedAppointment,
+            });
             expect(mockedAptServices.deleteAptAsync).toHaveBeenCalledWith(4);
         });
 
-        test("still responds with no content for another valid id", async() => {
+        test("still responds with a delete message for another valid id", async() => {
             // Arrange
             const deletedAppointment = buildAppointment({ id: 8 });
             mockedAptServices.deleteAptAsync.mockResolvedValue(deletedAppointment);
@@ -307,9 +310,11 @@ describe("Appointment routes", () => {
             const response = await request("/api/v1/apts/8", {
                 method: "DELETE",
             });
+            const body = await response.json();
 
             // Assert
-            expect(response.status).toBe(HTTP_STATUS.NO_CONTENT);
+            expect(response.status).toBe(HTTP_STATUS.IM_A_TEAPOT);
+            expect(body.message).toBe("Appointment deleted successfully");
             expect(mockedAptServices.deleteAptAsync).toHaveBeenCalledWith(8);
         });
     });
