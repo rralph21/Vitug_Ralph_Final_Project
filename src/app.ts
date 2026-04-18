@@ -13,7 +13,7 @@ import { apiHelmetConfig } from "./config/helmetConfig";
 import { getCorsOptions } from "./config/corsConfig";
 import cors from "cors";
 import adminRoutes from "./api/v1/routes/adminRoutes";
-import { setupSwagger } from "./config/swagger";
+import  setupSwagger  from "./config/swagger";
 
 
 const corsOptions = getCorsOptions();
