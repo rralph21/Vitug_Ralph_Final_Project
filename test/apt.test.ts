@@ -60,7 +60,7 @@ describe("Appointment routes", () => {
         test("returns all appointments", async() => {
             // Arrange
             const appointments = [buildAppointment(), buildAppointment({ id: 2, type: "Specialist Consultation" })];
-            mockedAptServices.getAllAptsAsync.mockReturnValue(appointments);
+            mockedAptServices.getAllAptsAsync.mockResolvedValue(appointments);
 
             // Act
             const response = await request("/api/v1/apts");
@@ -74,7 +74,7 @@ describe("Appointment routes", () => {
 
         test("returns an empty array when no appointments exist", async() => {
             // Arrange
-            mockedAptServices.getAllAptsAsync.mockReturnValue([]);
+            mockedAptServices.getAllAptsAsync.mockResolvedValue([]);
 
             // Act
             const response = await request("/api/v1/apts");
@@ -91,7 +91,7 @@ describe("Appointment routes", () => {
         test("returns the appointment for a valid id", async() => {
             // Arrange
             const appointment = buildAppointment({ id: 7, status: "pending" });
-            mockedAptServices.getAptByIdAsync.mockReturnValue(appointment);
+            mockedAptServices.getAptByIdAsync.mockResolvedValue(appointment);
 
             // Act
             const response = await request("/api/v1/apts/7");
@@ -108,7 +108,7 @@ describe("Appointment routes", () => {
 
         test("returns 404 when the appointment is missing", async() => {
             // Arrange
-            mockedAptServices.getAptByIdAsync.mockReturnValue(undefined as never);
+            mockedAptServices.getAptByIdAsync.mockResolvedValue(undefined as never);
 
             // Act
             const response = await request("/api/v1/apts/99");
@@ -134,7 +134,7 @@ describe("Appointment routes", () => {
                 item,
             };
             const createdAppointment = buildAppointment({ id: 10, ...payload.item });
-            mockedAptServices.createAptAsync.mockReturnValue(createdAppointment);
+            mockedAptServices.createAptAsync.mockResolvedValue(createdAppointment);
 
             // Act
             const response = await request("/api/v1/apts", {
@@ -165,7 +165,7 @@ describe("Appointment routes", () => {
                 item,
             };
             const createdAppointment = buildAppointment({ id: 11, ...payload.item });
-            mockedAptServices.createAptAsync.mockReturnValue(createdAppointment);
+            mockedAptServices.createAptAsync.mockResolvedValue(createdAppointment);
 
             // Act
             const response = await request("/api/v1/apts", {
@@ -215,7 +215,7 @@ describe("Appointment routes", () => {
                 item,
             };
             const updatedAppointment = buildAppointment({ id: 3, ...payload.item });
-            mockedAptServices.updateAptAsync.mockReturnValue(updatedAppointment);
+            mockedAptServices.updateAptAsync.mockResolvedValue(updatedAppointment);
 
             // Act
             const response = await request("/api/v1/apts/3", {
@@ -243,7 +243,7 @@ describe("Appointment routes", () => {
                 item,
             };
             const updatedAppointment = buildAppointment({ id: 5, spots: 2 });
-            mockedAptServices.updateAptAsync.mockReturnValue(updatedAppointment);
+            mockedAptServices.updateAptAsync.mockResolvedValue(updatedAppointment);
 
             // Act
             const response = await request("/api/v1/apts/5", {
@@ -283,7 +283,7 @@ describe("Appointment routes", () => {
         test("deletes an appointment by id", async() => {
             // Arrange
             const deletedAppointment = buildAppointment({ id: 4 });
-            mockedAptServices.deleteAptAsync.mockReturnValue(deletedAppointment);
+            mockedAptServices.deleteAptAsync.mockResolvedValue(deletedAppointment);
 
             // Act
             const response = await request("/api/v1/apts/4", {
@@ -300,7 +300,7 @@ describe("Appointment routes", () => {
         test("still responds with no content for another valid id", async() => {
             // Arrange
             const deletedAppointment = buildAppointment({ id: 8 });
-            mockedAptServices.deleteAptAsync.mockReturnValue(deletedAppointment);
+            mockedAptServices.deleteAptAsync.mockResolvedValue(deletedAppointment);
 
             // Act
             const response = await request("/api/v1/apts/8", {

@@ -1,14 +1,15 @@
 import { Request, Response } from "express";
-import {auth} from "../../../config/firebaseConfig";
+import { getFirebaseAuth } from "../../../config/firebaseConfig";
 import { UserRecord } from "firebase-admin/auth";
 
 export const setUserClaims = async (req: Request, res: Response) => {
-    let userClaimsToset = req.body
+    const userClaimsToset = req.body;
+    const auth = getFirebaseAuth();
 
     const user: UserRecord = await auth.getUser(userClaimsToset.uid);
     
-    await auth.setCustomUserClaims(userClaimsToset.uid, userClaimsToset.claims)
+    await auth.setCustomUserClaims(userClaimsToset.uid, userClaimsToset.claims);
 
     res.status(200).send("Ok");
-    return
+    return;
 };

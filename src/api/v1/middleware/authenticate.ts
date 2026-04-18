@@ -5,7 +5,7 @@ import { AuthenticationError } from "../errors/error";
 import { getErrorMessage, getErrorCode } from "../utils/errorUtils";
 
 // Internal module imports
-import { auth } from "../../../config/firebaseConfig";
+import { getFirebaseAuth } from "../../../config/firebaseConfig";
 
 /**
  * Middleware to authenticate a user using a Firebase ID token.
@@ -28,6 +28,7 @@ const authenticate = async (
     next: NextFunction
 ): Promise<void> => {
     try {
+        const auth = getFirebaseAuth();
         const authHeader = req.headers.authorization;
         const token: string | undefined = authHeader?.startsWith("Bearer ")
             ? authHeader.split(" ")[1]
