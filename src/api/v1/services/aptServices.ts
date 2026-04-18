@@ -39,7 +39,7 @@ export const createAptAsync = async(
     item: CreateAppointmentInput
 ): Promise<Appointment> => {
     const newApt = await createAptRepo(item);
-    appointmentEventManager.emitCreated(newApt);
+    await appointmentEventManager.emitCreated(newApt);
     return newApt;
 };
 
@@ -67,7 +67,7 @@ export const updateAptAsync = async(
         );
     }
 
-    appointmentEventManager.emitUpdated(updatedApt, previousApt);
+    await appointmentEventManager.emitUpdated(updatedApt, previousApt);
     return updatedApt;
 };
 
@@ -82,6 +82,6 @@ export const deleteAptAsync = async(id: number): Promise<Appointment> => {
         );
     }
 
-    appointmentEventManager.emitDeleted(deletedApt);
+    await appointmentEventManager.emitDeleted(deletedApt);
     return deletedApt;
 };

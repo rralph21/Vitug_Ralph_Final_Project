@@ -15,13 +15,13 @@ export interface AppointmentEvent {
 }
 
 export interface AppointmentObserver {
-    update(event: AppointmentEvent): void;
+    update(event: AppointmentEvent): void | Promise<void>;
 }
 
 export interface AppointmentSubject {
     attach(observer: AppointmentObserver): void;
     detach(observer: AppointmentObserver): void;
-    notify(event: AppointmentEvent): void;
+    notify(event: AppointmentEvent): Promise<void>;
 }
 
 export class EventManager implements AppointmentSubject {
@@ -35,42 +35,47 @@ export class EventManager implements AppointmentSubject {
         this.observers.delete(observer);
     }
 
-    public notify(event: AppointmentEvent): void {
-        this.observers.forEach((observer) => observer.update(event));
+    public async notify(event: AppointmentEvent): Promise<void> {
+        await Promise.all(
+            [...this.observers].map((observer) => observer.update(event))
+        );
     }
 
-    public emitCreated(appointment: Appointment): void {
-        this.notify({
+    public async emitCreated(appointment: Appointment): Promise<void> {
+        await this.notify({
             type: "appointmentCreated",
             appointment,
-            occurredAt: new Date().toISOString()
+            occurredAt: new Date().toISOString(),
         });
     }
 
-    public emitUpdated(appointment: Appointment, previousAppointment: Appointment): void {
-        this.notify({
+    public async emitUpdated(
+        appointment: Appointment,
+        previousAppointment: Appointment
+    ): Promise<void> {
+        await this.notify({
             type: "appointmentUpdated",
             appointment,
             previousAppointment,
-            occurredAt: new Date().toISOString()
+            occurredAt: new Date().toISOString(),
         });
 
         if (appointment.status !== previousAppointment.status) {
-            this.notify({
+            await this.notify({
                 type: "appointmentStatusChanged",
                 appointment,
                 previousAppointment,
                 previousStatus: previousAppointment.status,
-                occurredAt: new Date().toISOString()
+                occurredAt: new Date().toISOString(),
             });
         }
     }
 
-    public emitDeleted(appointment: Appointment): void {
-        this.notify({
+    public async emitDeleted(appointment: Appointment): Promise<void> {
+        await this.notify({
             type: "appointmentDeleted",
             appointment,
-            occurredAt: new Date().toISOString()
+            occurredAt: new Date().toISOString(),
         });
     }
 }
