@@ -7,9 +7,22 @@ import type { CreateAppointmentInput } from "../src/api/v1/models/createApt";
 import type { UpdateAppointmentInput } from "../src/api/v1/models/updateApt";
 import * as aptServices from "../src/api/v1/services/aptServices";
 
+const mockVerifyIdToken = jest.fn();
+
 jest.mock("../src/api/v1/services/aptServices");
+jest.mock("../src/config/firebaseConfig", () => ({
+    getFirebaseAuth: () => ({
+        verifyIdToken: mockVerifyIdToken,
+    }),
+    getFirebaseDb: jest.fn(),
+}));
 
 const mockedAptServices = jest.mocked(aptServices);
+const authHeaders = { Authorization: "Bearer test-token" };
+const jsonHeaders = {
+    "Content-Type": "application/json",
+    ...authHeaders,
+};
 
 const buildAppointment = (overrides: Partial<Appointment> = {}): Appointment => ({
     id: 1,
@@ -53,6 +66,10 @@ describe("Appointment routes", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        mockVerifyIdToken.mockResolvedValue({
+            uid: "test-user",
+            role: "admin",
+        });
     });
 
     const request = async(path: string, init?: RequestInit) => fetch(`${baseUrl}${path}`, init);
@@ -95,7 +112,9 @@ describe("Appointment routes", () => {
             mockedAptServices.getAptByIdAsync.mockResolvedValue(appointment);
 
             // Act
-            const response = await request("/api/v1/apts/7");
+            const response = await request("/api/v1/apts/7", {
+                headers: authHeaders,
+            });
             const body = await response.json();
 
             // Assert
@@ -112,7 +131,9 @@ describe("Appointment routes", () => {
             mockedAptServices.getAptByIdAsync.mockResolvedValue(undefined as never);
 
             // Act
-            const response = await request("/api/v1/apts/99");
+            const response = await request("/api/v1/apts/99", {
+                headers: authHeaders,
+            });
             const body = await response.json();
 
             // Assert
@@ -140,7 +161,7 @@ describe("Appointment routes", () => {
             // Act
             const response = await request("/api/v1/apts", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: jsonHeaders,
                 body: JSON.stringify(payload),
             });
             const body = await response.json();
@@ -171,7 +192,7 @@ describe("Appointment routes", () => {
             // Act
             const response = await request("/api/v1/apts", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: jsonHeaders,
                 body: JSON.stringify(payload),
             });
             const body = await response.json();
@@ -186,7 +207,7 @@ describe("Appointment routes", () => {
             // Act
             const response = await request("/api/v1/apts", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: jsonHeaders,
                 body: JSON.stringify({
                     item: {
                         clinic: "A",
@@ -217,11 +238,15 @@ describe("Appointment routes", () => {
             };
             const updatedAppointment = buildAppointment({ id: 3, ...payload.item });
             mockedAptServices.updateAptAsync.mockResolvedValue(updatedAppointment);
+            mockVerifyIdToken.mockResolvedValue({
+                uid: "doctor-user",
+                role: "doctor",
+            });
 
             // Act
             const response = await request("/api/v1/apts/3", {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: jsonHeaders,
                 body: JSON.stringify(payload),
             });
             const body = await response.json();
@@ -245,11 +270,15 @@ describe("Appointment routes", () => {
             };
             const updatedAppointment = buildAppointment({ id: 5, spots: 2 });
             mockedAptServices.updateAptAsync.mockResolvedValue(updatedAppointment);
+            mockVerifyIdToken.mockResolvedValue({
+                uid: "doctor-user",
+                role: "doctor",
+            });
 
             // Act
             const response = await request("/api/v1/apts/5", {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: jsonHeaders,
                 body: JSON.stringify(payload),
             });
             const body = await response.json();
@@ -261,10 +290,16 @@ describe("Appointment routes", () => {
         });
 
         test("returns 400 for an invalid appointment id", async() => {
+            // Arrange
+            mockVerifyIdToken.mockResolvedValue({
+                uid: "doctor-user",
+                role: "doctor",
+            });
+
             // Act
             const response = await request("/api/v1/apts/not-a-number", {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: jsonHeaders,
                 body: JSON.stringify({
                     item: {
                         spots: 2,
@@ -289,6 +324,7 @@ describe("Appointment routes", () => {
             // Act
             const response = await request("/api/v1/apts/4", {
                 method: "DELETE",
+                headers: authHeaders,
             });
             const body = await response.json();
 
@@ -309,6 +345,7 @@ describe("Appointment routes", () => {
             // Act
             const response = await request("/api/v1/apts/8", {
                 method: "DELETE",
+                headers: authHeaders,
             });
             const body = await response.json();
 
