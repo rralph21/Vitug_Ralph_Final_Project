@@ -9,13 +9,21 @@ import {
     consoleLogger,
 } from "./api/v1/middleware/logger";
 import errorHandler from "./api/v1/middleware/errorHander";
-
+import { apiHelmetConfig } from "./config/helmetConfig";
+import { getCorsOptions } from "./config/corsConfig";
 import adminRoutes from "./api/v1/routes/adminRoutes";
-import { setupSwagger } from "./config/swagger";
+import  setupSwagger  from "./config/swagger";
 
+
+const corsOptions = getCorsOptions();
 
 // Initialize Express application
 const app: Express = express();
+
+
+// Apply security headers first (before any routes)
+app.use(apiHelmetConfig);
+
 
 // Logging middleware should run early so all requests are captured.
 app.use(accessLogger);
@@ -26,6 +34,14 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 app.use(express.json());
+
+
+// Apply CORS middleware with options
+app.use(cors(getCorsOptions()));
+
+
+// Handle preflight requests for all routes
+app.options("/{*splat}", cors(corsOptions));
 
 setupSwagger(app);
 
