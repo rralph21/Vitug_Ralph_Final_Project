@@ -69,6 +69,52 @@ const swaggerOptions: swaggerJsdoc.Options = {
                         },
                     },
                 },
+                UnauthorizedResponse: {
+                    type: "object",
+                    properties: {
+                        success: { type: "boolean", example: false },
+                        error: {
+                            type: "object",
+                            properties: {
+                                message: {
+                                    type: "string",
+                                    example: "Unauthorized: No token provided",
+                                },
+                                code: {
+                                    type: "string",
+                                    example: "TOKEN_NOT_FOUND",
+                                },
+                            },
+                        },
+                        timestamp: {
+                            type: "string",
+                            format: "date-time",
+                        },
+                    },
+                },
+                ForbiddenResponse: {
+                    type: "object",
+                    properties: {
+                        success: { type: "boolean", example: false },
+                        error: {
+                            type: "object",
+                            properties: {
+                                message: {
+                                    type: "string",
+                                    example: "Forbidden: Insufficient role",
+                                },
+                                code: {
+                                    type: "string",
+                                    example: "INSUFFICIENT_ROLE",
+                                },
+                            },
+                        },
+                        timestamp: {
+                            type: "string",
+                            format: "date-time",
+                        },
+                    },
+                },
                 ErrorResponse: {
                     type: "object",
                     properties: {
