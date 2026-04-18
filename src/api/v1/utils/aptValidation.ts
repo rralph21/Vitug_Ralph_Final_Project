@@ -1,30 +1,47 @@
 import Joi from "joi";
 
-export const createLoanSchema = {
-    body: Joi.object({
-        applicant: Joi.string().trim().min(2).required(),
-        amount: Joi.number().positive().required(),
-        status: Joi.string()
-            .valid("pending", "open", "full", "delayed", "cancelled")
-            .required(),
-    }),
+const aptStatuses = ["pending", "open", "full", "delayed", "cancelled"] as const;
+
+const aptStatusSchema = Joi.string().valid(...aptStatuses);
+
+const appointmentIdSchema = Joi.object({
+    id: Joi.number().integer().positive().required(),
+});
+
+const createAppointmentPayloadSchema = Joi.object({
+    clinic: Joi.string().trim().min(2).required(),
+    type: Joi.string().trim().min(2).required(),
+    spots: Joi.number().integer().min(0).required(),
+    status: aptStatusSchema.required(),
+});
+
+const updateAppointmentPayloadSchema = Joi.object({
+    clinic: Joi.string().trim().min(2),
+    type: Joi.string().trim().min(2),
+    spots: Joi.number().integer().min(0),
+    status: aptStatusSchema,
+}).min(1);
+
+const wrappedBody = (schema: Joi.ObjectSchema) =>
+    Joi.object({
+        item: schema.required(),
+    });
+
+export const createAptSchema = {
+    body: Joi.alternatives().try(
+        createAppointmentPayloadSchema,
+        wrappedBody(createAppointmentPayloadSchema)
+    ),
 };
 
-export const updateLoanSchema = {
-    body: Joi.object({
-        applicant: Joi.string().trim().min(2).optional(),
-        amount: Joi.number().positive().optional(),
-        status: Joi.string()
-            .valid("pending", "open", "full", "delayed", "cancelled")
-            .optional(),
-    }).min(1),
-    params: Joi.object({
-        id: Joi.number().integer().positive().required(),
-    }),
+export const updateAptSchema = {
+    params: appointmentIdSchema,
+    body: Joi.alternatives().try(
+        updateAppointmentPayloadSchema,
+        wrappedBody(updateAppointmentPayloadSchema)
+    ),
 };
 
-export const loanIdSchema = {
-    params: Joi.object({
-        id: Joi.number().integer().positive().required(),
-    }),
+export const aptIdSchema = {
+    params: appointmentIdSchema,
 };

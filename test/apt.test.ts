@@ -146,7 +146,10 @@ describe("Appointment routes", () => {
 
             // Assert
             expect(response.status).toBe(HTTP_STATUS.CREATED);
-            expect(body).toEqual(createdAppointment);
+            expect(body).toEqual({
+                message: "Appointment created successfully",
+                data: createdAppointment,
+            });
             expect(mockedAptServices.createAptAsync).toHaveBeenCalledWith(payload.item);
         });
 
@@ -174,8 +177,30 @@ describe("Appointment routes", () => {
 
             // Assert
             expect(response.status).toBe(HTTP_STATUS.CREATED);
-            expect(body.status).toBe("delayed");
+            expect(body.data.status).toBe("delayed");
             expect(mockedAptServices.createAptAsync).toHaveBeenCalledWith(payload.item);
+        });
+
+        test("returns 400 for an invalid appointment payload", async() => {
+            // Act
+            const response = await request("/api/v1/apts", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    item: {
+                        clinic: "A",
+                        type: "Vaccination",
+                        spots: -1,
+                        status: "invalid",
+                    },
+                }),
+            });
+            const body = await response.json();
+
+            // Assert
+            expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST);
+            expect(body.error).toContain("Validation error:");
+            expect(mockedAptServices.createAptAsync).not.toHaveBeenCalled();
         });
     });
 
@@ -202,7 +227,10 @@ describe("Appointment routes", () => {
 
             // Assert
             expect(response.status).toBe(HTTP_STATUS.OK);
-            expect(body).toEqual(updatedAppointment);
+            expect(body).toEqual({
+                message: "Appointment updated successfully",
+                data: updatedAppointment,
+            });
             expect(mockedAptServices.updateAptAsync).toHaveBeenCalledWith(3, payload.item);
         });
 
@@ -227,8 +255,27 @@ describe("Appointment routes", () => {
 
             // Assert
             expect(response.status).toBe(HTTP_STATUS.OK);
-            expect(body.spots).toBe(2);
+            expect(body.data.spots).toBe(2);
             expect(mockedAptServices.updateAptAsync).toHaveBeenCalledWith(5, payload.item);
+        });
+
+        test("returns 400 for an invalid appointment id", async() => {
+            // Act
+            const response = await request("/api/v1/apts/not-a-number", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    item: {
+                        spots: 2,
+                    },
+                }),
+            });
+            const body = await response.json();
+
+            // Assert
+            expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST);
+            expect(body.error).toContain("Validation error:");
+            expect(mockedAptServices.updateAptAsync).not.toHaveBeenCalled();
         });
     });
 

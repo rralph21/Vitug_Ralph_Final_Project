@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { ObjectSchema } from "joi";
+import { Schema } from "joi";
 
 import { HTTP_STATUS } from "../../../constant/httpConstants";
 
 interface RequestSchemas {
-    body?: ObjectSchema;
-    params?: ObjectSchema;
-    query?: ObjectSchema;
+    body?: Schema;
+    params?: Schema;
+    query?: Schema;
 }
 
 interface ValidationOptions {
@@ -50,7 +50,7 @@ export const validateRequest = (
              * @returns The original data if validation fails or stripping is disabled, otherwise the stripped/validated data
              */
             const validatePart = (
-                schema: ObjectSchema,
+                schema: Schema,
                 data: any,
                 partName: string,
                 shouldStrip: boolean
