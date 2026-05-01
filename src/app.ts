@@ -1,4 +1,5 @@
 import express, { Express } from "express";
+import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -46,6 +47,14 @@ app.options("/{*splat}", cors(corsOptions));
 
 setupSwagger(app);
 
+app.get("/styles.css", (req, res) => {
+    res.sendFile(path.join(__dirname, "styles.css"));
+});
+
+app.get("/script.js", (req, res) => {
+    res.sendFile(path.join(__dirname, "script.js"));
+});
+
 app.use("/api/v1", aptRoutes);
 app.use("/api/v1", adminRoutes);
 
@@ -92,7 +101,7 @@ app.get("/api/v1/health", (req, res) => {
  *               $ref: '#/components/schemas/RootResponse'
  */
 app.get("/", (req, res) => {
-    res.send("It's Online!!");
+    res.sendFile(path.join(__dirname, "index.html"));
 });
 
 // Global error handling middleware (MUST be applied last)

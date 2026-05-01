@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MB 360 - Manitoba Addictions Resource Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css?v=4" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+</head>
+<body>
+  <header class="top-nav">
+    <div class="top-nav__left">
+      <div class="logo-circle">M</div>
+      <div class="top-nav__app">
+        <span class="top-nav__app-name">MB 360</span>
+        <span class="top-nav__app-subtitle">Healthcare Resource Management</span>
+      </div>
+    </div>
+
+    <div class="top-nav__right">
+      <span class="badge badge--live">
+        <span class="dot dot--green"></span>
+        Live
+      </span>
+      <a class="btn btn--ghost" href="/">Home</a>
+      <a class="btn btn--primary" href="/api-docs">API Docs</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="page-header">
+      <h1>Manitoba Addictions Resource Dashboard</h1>
+      <p>
+        Live updates from clinics, detox centres, treatment programs, shelters,
+        and community supports.
+      </p>
+    </section>
+
+    <section class="summary-grid" aria-label="Status summary">
+      <article class="summary-card summary-card--green" data-status-group="available" role="button" tabindex="0">
+        <div class="summary-card__icon">OK</div>
+        <div class="summary-card__content">
+          <span class="summary-card__label">Available</span>
+          <span class="summary-card__value" id="availableCount">0</span>
+        </div>
+      </article>
+
+      <article class="summary-card summary-card--amber" data-status-group="limited" role="button" tabindex="0">
+        <div class="summary-card__icon">!</div>
+        <div class="summary-card__content">
+          <span class="summary-card__label">Limited</span>
+          <span class="summary-card__value" id="limitedCount">0</span>
+        </div>
+      </article>
+
+      <article class="summary-card summary-card--red" data-status-group="full" role="button" tabindex="0">
+        <div class="summary-card__icon">0</div>
+        <div class="summary-card__content">
+          <span class="summary-card__label">At Capacity</span>
+          <span class="summary-card__value" id="fullCount">0</span>
+        </div>
+      </article>
+
+      <article class="summary-card summary-card--grey" data-status-group="closed" role="button" tabindex="0">
+        <div class="summary-card__icon">X</div>
+        <div class="summary-card__content">
+          <span class="summary-card__label">Temporarily Closed</span>
+          <span class="summary-card__value" id="closedCount">0</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="filters" aria-label="Organization filters">
+      <div class="filters__left">
+        <label class="field">
+          <span class="field__label">Search Organizations</span>
+          <span class="field__control">
+            <input
+              id="searchInput"
+              type="search"
+              placeholder="Search by name or type..."
+              autocomplete="off"
+            />
+          </span>
+        </label>
+      </div>
+
+      <div class="filters__right">
+        <label class="field">
+          <span class="field__label">Organization Type</span>
+          <span class="field__control">
+            <select id="typeFilter">
+              <option value="">All Types</option>
+            </select>
+          </span>
+        </label>
+
+        <label class="field">
+          <span class="field__label">Availability Status</span>
+          <span class="field__control">
+            <select id="statusFilter">
+              <option value="">All Statuses</option>
+              <option value="open">Available</option>
+              <option value="pending">Limited</option>
+              <option value="delayed">Delayed</option>
+              <option value="full">At Capacity</option>
+              <option value="cancelled">Temporarily Closed</option>
+            </select>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <div class="toolbar">
+      <p class="organizations-count" id="organizationsCount">Loading organizations...</p>
+      <button id="resetView" class="btn btn--outline" type="button">
+        Show all
+      </button>
+    </div>
+
+    <div id="orgStatusMessage" class="sr-only" aria-live="polite"></div>
+
+    <section id="cardsGrid" class="cards-grid" aria-label="Organizations list"></section>
+
+    <section id="mapWrapper" class="map-wrapper" aria-label="Organization map">
+      <button id="closeMapBtn" class="btn btn--outline map-close-btn" type="button">
+        Close Map
+      </button>
+      <div id="map"></div>
+    </section>
+  </main>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script src="script.js?v=4" defer></script>
+</body>
+</html>
